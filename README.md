@@ -19,3 +19,5 @@ Proyecto para gestionar el inventario de una bodega usando SQL Server y Python.
 3. Instala dependencias: pip install pyodbc python-dotenv
 
 
+# .env
+
