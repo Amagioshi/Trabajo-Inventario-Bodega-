@@ -7,7 +7,8 @@ Proyecto para gestionar el inventario de una bodega usando SQL Server y Python.
 
 - SQL Server 2022 Express
 - Python 
-
+- VS code como editor de codigo
+- SQL Server Manager studio 20 como visualizador 
 
 # Configuracion
 
