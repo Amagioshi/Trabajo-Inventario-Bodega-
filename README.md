@@ -21,3 +21,4 @@ Proyecto para gestionar el inventario de una bodega usando SQL Server y Python.
 
 # .env
 
+# se creo el archivo conexion para generar los parametros de conexion e iteracion con la base de datos
