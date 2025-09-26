@@ -12,18 +12,28 @@ class ConexionBD: # definimos la clase conexionBD que agrupara la logica de cone
         
         
     def conectar(self):
-        try: # se usa try/except para manejar errores sin que el programa se detenga
-            cadena_conexion = (
-                f"DRIVER={{{self.driver}}};"
-                f"SERVER={self.servidor};"
-                f"DATABASE={self.base_datos};"
-                "Trusted_Connection=yes;"
-            )
-            self.conexion = pyodbc.connect(cadena_conexion) # se utiliza puodbc.conect() para abrir la conexion y la guardamos en self.conexion
-            print("Conexion exitosa a SQL Server.")
+        try:
+            # Leemos las variables
+            driver = os.getenv("DRIVER")
+            server = os.getenv("SERVER")
+            database = os.getenv("DATABASE")
         
-        except exception as e: # si ocurre un error, se captura y se imprime
-            print("ERROR al conectar a la base de datos:", e)
+            # Validamos que existan
+            if not driver or not server or not database:
+                raise ValueError("Faltan variables en .env")
+        
+            # Usamos una cadena segura: escapamos la barra si es necesario
+            # Pero en la mayoría de los casos, .\SQLEXPRESS funciona sin cambios
+            cadena_conexion = (
+                f"DRIVER={{{driver}}};"
+                f"SERVER={server};"
+                f"DATABASE={database};"
+                f"Trusted_Connection=yes;"
+            )
+            self.conexion = pyodbc.connect(cadena_conexion)
+            print(" Conexión exitosa a SQL Server.")
+        except Exception as e:
+            print(" ERROR al conectar:", e)
             
     def cerrar_conexion(self): # para cerrar la conexion de forma segura
         if self.conexion:# verificamos si self.conexion no es none (si es que hay una conexion abierta)
@@ -48,6 +58,6 @@ class ConexionBD: # definimos la clase conexionBD que agrupara la logica de cone
             cursor.execute(consulta, parametros)
             self.conexion.commit()
             print("Instruccion ejecutada correctamente.")
-        except exception as e: 
+        except Exception as e: 
             print("Error al ejecutar la instruccion:", e)
             self.conexion.rollback() # deshacemos cualquier cambio parcial para mantener la consistencia de la bd

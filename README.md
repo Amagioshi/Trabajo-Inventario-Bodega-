@@ -20,5 +20,24 @@ Proyecto para gestionar el inventario de una bodega usando SQL Server y Python.
 
 
 # .env
+# conexion.py
+- el archivo conecion.py contiene la clase ConexionBD, responsable de gestionar la conexion con la base de datos 
+- contiene variables del archivo .env(DRIVER, SERVER, DATABASE) para configurar la conexion.
+- Funciona con autenticacion de Windows (Trusted_Connecction=yes) por lo que no requiere usuario y contraseña
+- contiene metodos como:
+° conectar(): que abre la conexion y valida que las variables del entorno esten presentes.
+° cerrar_conexion(): cierra la conexion de forma segura.
+° ejecutar_consulta(): ejecuta sentencias  (SELECT) y devuelve resultados.
+° ejecutar_instruccion(): (INSERT, UPDATE, DELETE) con manejo de transacciones (commit/ rollback).
+° implementa manejo de errores con (TRY/EXCEPT) para evitar que el programa se detenga ante fallos.
+- Esta clase esta diseñada para ser reutilizable con otros modulos del proyecto, pueden importar desde la clase sin duplicar codigo
 
-# se creo el archivo conexion para generar los parametros de conexion e iteracion con la base de datos
+
+# crear_tabla.py
+- este archivo se utiliza solo una vez para preparar la estructura de base de datos al inicio del proyecto
+
+° Conecta a InventarioBodegaBD usando la clase ConexionBD.
+° Ejecuta una instruccion SQL que crea la tabla Productos si no existe
+° La tabla incluye los campos: id (clave primaria), nombre, id y stock.
+° No inserta datos ni modifica, solo define la estructura.
+° Esto solo esta destinado a verificar que la base de datos esté lista para operaciones posteriores
