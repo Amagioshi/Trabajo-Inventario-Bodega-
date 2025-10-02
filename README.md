@@ -41,3 +41,11 @@ Proyecto para gestionar el inventario de una bodega usando SQL Server y Python.
 ° La tabla incluye los campos: id (clave primaria), nombre, id y stock.
 ° No inserta datos ni modifica, solo define la estructura.
 ° Esto solo esta destinado a verificar que la base de datos esté lista para operaciones posteriores
+
+
+# A partir de ahora empezaremos con el codigo funcional exluyendo la conexion a DB
+
+- Carpeta Models
+Categoria.py:
+contiene una clase llamda categoria, que cumple la funcion de agrupar productos segun su categoria, "lacteos", "cereales", "cecinas" etc..
+esto nos permite hacer busquedas mas eficientes entre productos.
