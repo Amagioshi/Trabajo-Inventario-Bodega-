@@ -50,4 +50,6 @@ Categoria.py:
 contiene una clase llamda categoria, que cumple la funcion de agrupar productos segun su categoria, "lacteos", "cereales", "cecinas" etc..
 esto nos permite hacer busquedas mas eficientes entre productos.
 
--producto.py
+- Producto.py
+
+- Movimiento.py
