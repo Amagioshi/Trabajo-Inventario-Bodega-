@@ -12,52 +12,59 @@ class ConexionBD: # definimos la clase conexionBD que agrupara la logica de cone
         
         
     def conectar(self):
-        try:
-            # Leemos las variables
-            driver = os.getenv("DRIVER")
-            server = os.getenv("SERVER")
-            database = os.getenv("DATABASE")
-        
-            # Validamos que existan
-            if not driver or not server or not database:
-                raise ValueError("Faltan variables en .env")
-        
-            # Usamos una cadena segura: escapamos la barra si es necesario
-            # Pero en la mayoría de los casos, .\SQLEXPRESS funciona sin cambios
-            cadena_conexion = (
-                f"DRIVER={{{driver}}};"
-                f"SERVER={server};"
-                f"DATABASE={database};"
-                f"Trusted_Connection=yes;"
-            )
-            self.conexion = pyodbc.connect(cadena_conexion)
-            print(" Conexión exitosa a SQL Server.")
-        except Exception as e:
-            print(" ERROR al conectar:", e)
-            
-    def cerrar_conexion(self): # para cerrar la conexion de forma segura
-        if self.conexion:# verificamos si self.conexion no es none (si es que hay una conexion abierta)
-            self.conexion.close() # cerramos la conexion activa
-            print("Conexion cerrada con exito.")
-    
-    
-    def ejecutar_consulta(self, consulta, parametros= ()): # forma para ejecutar consultas que devuelven datos como (select)
-        try: # usamos try/except para manejar errores en la consulta
-            cursor = self.conexion.cursor() # creamos un cursor para ejecutar comandos 
-            cursor.execute(consulta, parametros) #ejecutamos la consulta SQL que nos pasaron con sus parametros
-            return cursor.fetchall() #devolvemos todos los resultados de la consulta
-        except Exception as e: # si hay un error, lo capturamos e imprimimos
-            print("Error al realizar la consulta:", e)
-            return []
-    
-    
-    #para ejecutar comandos que modifican la base de datos
+        if not all([self.driver, self.servidor, self.base_datos]):
+            raise ValueError("Faltan variables en .env")
+        cadena_conexion = (
+            f"DRIVER={{{self.driver}}};"
+            f"SERVER={self.servidor};"
+            f"DATABASE={self.base_datos};"
+            f"Trusted_Connection=yes;"
+        )
+        self.conexion = pyodbc.connect(cadena_conexion)
+
+    def cerrar_conexion(self):
+        if self.conexion:
+            self.conexion.close()
+
+    def ejecutar_consulta(self, consulta, parametros=()):
+        cursor = self.conexion.cursor()
+        cursor.execute(consulta, parametros)
+        resultado = cursor.fetchall()
+        cursor.close()
+        return resultado
+
     def ejecutar_instruccion(self, consulta, parametros=()):
-        try:
-            cursor = self.conexion.cursor()
-            cursor.execute(consulta, parametros)
-            self.conexion.commit()
-            print("Instruccion ejecutada correctamente.")
-        except Exception as e: 
-            print("Error al ejecutar la instruccion:", e)
-            self.conexion.rollback() # deshacemos cualquier cambio parcial para mantener la consistencia de la bd
+        cursor = self.conexion.cursor()
+        cursor.execute(consulta, parametros)
+        self.conexion.commit()
+        cursor.close()
+        
+    def crear_categoria(self, nombre: str):
+        consulta = "INSERT INTO Categoria (nombre) OUTPUT INSERTED.id VALUES (?)"
+        cursor = self.conexion.cursor()
+        cursor.execute(consulta, (nombre,))
+        nuevo_id = cursor.fetchone()[0]
+        self.conexion.commit()
+        cursor.close()
+        return nuevo_id
+    
+    
+    def obtener_categorias(self):
+        from models.categoria import Categoria
+        filas = self.ejecutar_consulta("SELECT id, nombre FROM Categoria")
+        cursor = self.conexion.cursor()
+        cursor.execute(consulta, (nombre,))
+        nuevo_id = cursor.fetchone()[0]
+        self.conexion.commit()
+        cursor.close()
+        return nuevo_id
+    
+    def obtener_categorias(self):
+        from models.categoria import Categoria
+        filas = self.ejecutar_consulta("SELECT id, nombre FROM Categoria")
+        return [Categoria(id=fila[0], nombre=fila[1]) for fila in filas]
+    
+        
+    
+        
+        
