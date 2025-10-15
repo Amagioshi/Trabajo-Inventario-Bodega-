@@ -15,23 +15,23 @@ if __name__ == "__main__":
     try:
         # Paso 2: conectarse a la base de datos
         db.conectar()
-        print("✅ Conexión exitosa.")
+        print(" Conexión exitosa.")
         
         # Paso 3: crear una categoría de prueba
         nombre_prueba = "Lácteos"
         id_nuevo = db.crear_categoria(nombre_prueba)
-        print(f"✅ Categoría creada con ID: {id_nuevo}")
+        print(f" Categoría creada con ID: {id_nuevo}")
         
         # Paso 4: obtener todas las categorías
         categorias = db.obtener_categorias()
-        print("✅ Categorías obtenidas:")
+        print(" Categorías obtenidas:")
         for cat in categorias:
             # cat es un OBJETO Categoria, no una tupla
             print(f"   ID: {cat.id}, Nombre: {cat.nombre}")
     
     except Exception as e:
         # Capturamos cualquier error y lo mostramos CLARAMENTE
-        print(f"❌ ERROR: {e}")
+        print(f" ERROR: {e}")
     
     finally:
         # Paso 5: cerrar conexión SIEMPRE, incluso si hubo error

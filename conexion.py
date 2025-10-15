@@ -52,19 +52,8 @@ class ConexionBD: # definimos la clase conexionBD que agrupara la logica de cone
     def obtener_categorias(self):
         from models.categoria import Categoria
         filas = self.ejecutar_consulta("SELECT id, nombre FROM Categoria")
-        cursor = self.conexion.cursor()
-        cursor.execute(consulta, (nombre,))
-        nuevo_id = cursor.fetchone()[0]
-        self.conexion.commit()
-        cursor.close()
-        return nuevo_id
-    
-    def obtener_categorias(self):
-        from models.categoria import Categoria
-        filas = self.ejecutar_consulta("SELECT id, nombre FROM Categoria")
         return [Categoria(id=fila[0], nombre=fila[1]) for fila in filas]
     
-        
     
         
         
