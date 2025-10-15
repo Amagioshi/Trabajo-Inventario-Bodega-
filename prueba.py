@@ -36,4 +36,4 @@ if __name__ == "__main__":
     finally:
         # Paso 5: cerrar conexión SIEMPRE, incluso si hubo error
         db.cerrar_conexion()
-        print("🔌 Conexión cerrada.")
+        print(" Conexión cerrada.")
