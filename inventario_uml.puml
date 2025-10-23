@@ -1,0 +1,134 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+' === CAPA DE DOMINIO ===
+class Categoria {
+  - id: int
+  - nombre: str
+  ..
+  + id: int
+  + nombre: str
+}
+
+class Producto {
+  - id: int
+  - nombre: str
+  - precio: float
+  - stock: int
+  - categoria_id: int
+  - activo: bool
+  ..
+  + id: int
+  + nombre: str
+  + precio: float
+  + stock: int
+  + categoria_id: int
+  + activo: bool
+}
+
+class Movimiento {
+  - id: int
+  - producto_id: int
+  - tipo: str
+  - cantidad: int
+  - motivo: str
+  - fecha: date
+  ..
+  + id: int
+  + producto_id: int
+  + tipo: str
+  + cantidad: int
+  + motivo: str
+  + fecha: date
+}
+
+' === CAPA DE CONEXIÓN ===
+class ConexionBD {
+  - driver: str
+  - servidor: str
+  - base_datos: str
+  - conexion: object
+  ..
+  + conectar()
+  + cerrar_conexion()
+  + ejecutar_consulta(consulta, parametros)
+  + ejecutar_instruccion(consulta, parametros)
+  + ejecutar_instruccion_con_retorno(consulta, parametros)
+}
+
+' === CAPA DE REPOSITORIOS ===
+class CategoriaRepositorio {
+  - conexion: ConexionBD
+  ..
+  + crear(nombre)
+  + obtener_todos()
+  + obtener_por_id(id)
+  + actualizar(id, nombre)
+  + eliminar(id)
+}
+
+class ProductoRepositorio {
+  - conexion: ConexionBD
+  ..
+  + crear(nombre, precio, categoria_id)
+  + obtener_todos()
+  + obtener_por_id(id)
+  + actualizar(id, nombre, precio, categoria_id)
+  + eliminar(id)
+}
+
+class MovimientoRepositorio {
+  - conexion: ConexionBD
+  ..
+  + crear(producto_id, tipo, cantidad, motivo, fecha)
+  + obtener_por_producto(producto_id)
+}
+
+' === CAPA DE SERVICIOS ===
+class CategoriaServicio {
+  - repositorio: CategoriaRepositorio
+  ..
+  + crear_categoria(nombre)
+  + listar_categorias()
+  + actualizar_categoria(id, nombre)
+  + eliminar_categoria(id)
+}
+
+class ProductoServicio {
+  - repositorio: ProductoRepositorio
+  ..
+  + crear_producto(nombre, precio, categoria_id)
+  + listar_productos()
+  + obtener_producto(id)
+  + actualizar_producto(id, nombre, precio, categoria_id)
+  + eliminar_producto(id)
+}
+
+' === RELACIONES ===
+' Dominio
+Categoria "1" -- "0..*" Producto
+Producto "1" -- "0..*" Movimiento
+
+' Infraestructura
+ConexionBD <.. CategoriaRepositorio
+ConexionBD <.. ProductoRepositorio
+ConexionBD <.. MovimientoRepositorio
+
+CategoriaRepositorio <.. CategoriaServicio
+ProductoRepositorio <.. ProductoServicio
+
+' Nota: main.py usa servicios y repositorios, pero no es una clase
+note top of ConexionBD
+  main.py instancia y usa:
+  - ConexionBD
+  - CategoriaServicio
+  - ProductoServicio  
+  - MovimientoRepositorio
+end note
+
+@enduml
