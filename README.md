@@ -20,6 +20,12 @@ Proyecto para gestionar el inventario de una bodega usando SQL Server y Python.
 
 
 # .env
+# utilidades.py
+Este archivo contiene herramientas de seguridad para la entrada de datos del usuario. Su función principal es evitar que el programa falle cuando el usuario ingresa información incorrecta.
+1-. solicitar_entero() - Asegura que el usuario ingrese solo números enteros válidos
+2-. solicitar_texto() - Garantiza que el texto ingresado cumpla con reglas específicas
+
+
 # conexion.py
 - el archivo conecion.py contiene la clase ConexionBD, responsable de gestionar la conexion con la base de datos 
 - contiene variables del archivo .env(DRIVER, SERVER, DATABASE) para configurar la conexion.
