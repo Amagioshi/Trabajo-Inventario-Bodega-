@@ -12,13 +12,21 @@ class ConexionBD: # definimos la clase conexionBD que agrupara la logica de cone
         
         
     def conectar(self):
+        load_dotenv()
+        user = os.getenv("sa")
+        password = os.getenv("Amagioshi@")
+        encrypt = os.getenv("ENCRYPT","no")
+
         if not all([self.driver, self.servidor, self.base_datos]):
             raise ValueError("Faltan variables en .env")
         cadena_conexion = (
             f"DRIVER={{{self.driver}}};"
             f"SERVER={self.servidor};"
             f"DATABASE={self.base_datos};"
-            f"Trusted_Connection=yes;"
+            f"UID={user;}"
+            f"PWD={password};"
+            f"Encrypt={encrypt};"
+            f"TrustServerCertificate=yes;"
         )
         self.conexion = pyodbc.connect(cadena_conexion)
 
