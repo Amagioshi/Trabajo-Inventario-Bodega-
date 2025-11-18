@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestión de Categorías</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .header { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Gestión de Categorías</h1>
+        <a href="/">← Volver al Dashboard</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div style="color: red; margin: 10px 0;">
+                {{ message }}
+            </div>
+            {% else %}
+            <div style="color: green; margin: 10px 0;">
+                {{ message }}
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <h2>Crear Nueva Categoría</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" name="nombre" placeholder="Nombre de la categoría" required style="width: 300px; padding: 8px;">
+        </div>
+        <button type="submit" style="padding: 8px 15px; background: #28a745; color: white; border: none;">
+            Crear Categoría
+        </button>
+    </form>
+
+    <h2>Categorías Existentes</h2>
+    {% if categorias %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.id }}</td>
+                    <td>{{ categoria.nombre }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay categorías registradas.</p>
+    {% endif %}
+</body>
+</html>

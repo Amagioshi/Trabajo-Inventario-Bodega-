@@ -128,7 +128,18 @@ Este archivo cumple la misma función de coordinación pero para las operaciones
 3-. Retorna las respuestas a la interfaz para informar al usuario
 
 
+Dado a un cambio de SO se implementaron nuevos programas para poder hacer projecto
 
+Docker-Desktop reemplaza a SQL-Express 
+DBeaver reemplaza a Sql Scerver Manager Studio
+Los metodos de conexion entre el programa y la base de datos se mantiene con dotenv y pyodbc
+
+
+# Django
+
+ Hoy se implemento el framework Django en la carpeta Bodega y Bodega1 y se logro conectar a la base de datos SQL Server en Docker via pyodbc y dotenv
+
+ 
 
 
 

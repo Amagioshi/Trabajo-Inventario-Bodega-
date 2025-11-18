@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Sistema Inventario</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .header { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .menu { display: flex; gap: 10px; margin: 20px 0; }
+        .menu a { padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sistema de Inventario de Bodega</h1>
+        <p>Bienvenido <strong>{{ user.username }}</strong> ({{ user.tipo_usuario }})</p>
+        <a href="/logout/">Cerrar Sesión</a>
+    </div>
+
+    <div class="menu">
+        <a href="/categorias/">Gestion de Categorias</a>  <!-- CORREGIDO -->
+        <a href="#">Gestion de Productos</a>
+        <a href="#">Movimientos</a>
+        <a href="#">Informes</a>
+    </div>
+
+    <div>
+        <h2>Proximos pasos:</h2>
+        <ul>
+            <li>Integrar tu codigo de inventario existente</li>
+            <li>Conectar con SQL Server</li>
+            <li>Agregar Bootstrap para mejor diseño</li>
+        </ul>
+    </div>
+</body>
+</html>
