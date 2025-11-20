@@ -6,7 +6,7 @@ class Producto:
             raise ValueError(f"Entrada invalida: {nombre}El nombre no puede estar vacio.")
         if len(nombre.strip()) < 2 or len(nombre.strip()) > 100:
             raise ValueError(f"Entrada invalida: {nombre}.El nombre debe tener entre 2 y 100 caracteres.")
-        if precio <= 0: # el precio debe ser positivo y mayor a 0  
+        if precio < 0: # el precio debe ser positivo y mayor a 0  
             raise ValueError(f"Entrada invalida {precio}. El precio debe ser mayor a 0.")
         if stock < 0: # el stock no puede ser negativo 
             raise ValueError(f"Entrada invalida {stock}. El stock no puede ser negativo.")

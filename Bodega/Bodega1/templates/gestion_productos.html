@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestión de Productos</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 20px auto; padding: 20px; }
+        .header { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Gestión de Productos</h1>
+        <a href="/">← Volver al Dashboard</a>|
+    </div>
+
+    {% if messages %}
+{% for message in messages %}
+
+{% if message.tags == 'error' %}
+<div style="color: red; margin: 10px 0; padding: 10px; border: 1px solid red;">
+    {{ message }}
+</div>
+{% else %}
+<div style="color: green; margin: 10px 0; padding: 10px; border: 1px solid green;">
+    {{ message }}
+</div>
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+    <div class="section">
+        <h2>Crear Nuevo Producto</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="nombre" placeholder="Nombre del producto" required style="width: 300px; padding: 8px;">
+            </div>
+            <div class="form-group">
+                <input type="number" name="precio" placeholder="Precio" step="0.01" min="0" required style="width: 200px; padding: 8px;">
+            </div>
+            <div class="form-group">
+                <select name="categoria_id" required style="width: 300px; padding: 8px;">
+                    <option value="">Seleccione una categoría</option>
+                    {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" style="padding: 8px 15px; background: #28a745; color: white; border: none;">
+                Crear Producto
+            </button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Productos Existentes</h2>
+        {% if productos %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Categoría ID</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.id }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td>{{ producto.stock }}</td>
+                        <td>{{ producto.categoria_id }}</td>
+                        <td>{% if producto.activo %}Activo{% else %}Inactivo{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay productos registrados.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

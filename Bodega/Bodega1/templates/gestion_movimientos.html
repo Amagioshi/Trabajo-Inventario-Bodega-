@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro de Movimientos</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .header { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .tipo-buttons { display: flex; gap: 10px; margin: 10px 0; }
+        .tipo-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .ingreso { background: #28a745; color: white; }
+        .egreso { background: #dc3545; color: white; }
+        .tipo-btn.active { border: 3px solid #007bff; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Registro de Movimientos</h1>
+        <a href="/">← Volver al Dashboard</a> | 
+        <a href="/movimientos/historial/">Ver Historial</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="color: {% if message.tags == 'error' %}red{% elif message.tags == 'info' %}blue{% else %}green{% endif %}; 
+                         margin: 10px 0; padding: 10px; border: 1px solid {% if message.tags == 'error' %}red{% elif message.tags == 'info' %}blue{% else %}green{% endif %};">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="section">
+        <h2>Registrar Nuevo Movimiento</h2>
+        <form method="post" id="movimientoForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Producto:</label>
+                <select name="producto_id" required style="width: 100%; padding: 8px;">
+                    <option value="">Seleccione un producto</option>
+                    {% for producto in productos %}
+                    <option value="{{ producto.id }}">
+                        {{ producto.nombre }} (Stock: {{ producto.stock }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Movimiento:</label>
+                <div class="tipo-buttons">
+                    <button type="button" class="tipo-btn ingreso active" data-tipo="ingreso">
+                        Ingreso
+                    </button>
+                    <button type="button" class="tipo-btn egreso" data-tipo="egreso">
+                         Egreso
+                    </button>
+                </div>
+                <input type="hidden" name="tipo" id="tipoInput" value="ingreso" required>
+            </div>
+
+            <div class="form-group">
+                <label>Cantidad:</label>
+                <input type="number" name="cantidad" min="1" required 
+                       style="width: 200px; padding: 8px;" placeholder="Cantidad">
+            </div>
+
+            <div class="form-group">
+                <label>Motivo:</label>
+                <input type="text" name="motivo" required 
+                       style="width: 100%; padding: 8px;" placeholder="Ej: Compra proveedor, Venta cliente, Ajuste inventario">
+            </div>
+
+            <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none;">
+                Registrar Movimiento
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoButtons = document.querySelectorAll('.tipo-btn');
+            const tipoInput = document.getElementById('tipoInput');
+            
+            tipoButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remover clase active de todos
+                    tipoButtons.forEach(btn => btn.classList.remove('active'));
+                    // Agregar clase active al clickeado
+                    this.classList.add('active');
+                    // Actualizar input hidden
+                    tipoInput.value = this.getAttribute('data-tipo');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

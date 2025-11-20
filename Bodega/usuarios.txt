@@ -1,0 +1,3 @@
+admin,Amagioshi@,administrador
+bodeguero,clave123,usuario
+invitado,clave123,invitado
