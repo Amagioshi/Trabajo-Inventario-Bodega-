@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Informes - Sistema Inventario</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .header { margin-bottom: 20px; }
+        .card { border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin: 10px 0; }
+        .card h3 { margin-top: 0; }
+        .stats { display: flex; gap: 20px; margin: 20px 0; }
+        .stat-item { flex: 1; text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .low-stock { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Informes del Sistema</h1>
+        <a href="/">← Volver al Dashboard</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div style="color: red; margin: 10px 0; padding: 10px; border: 1px solid red;">
+                    {{ message }}
+                </div>
+            {% else %}
+                <div style="color: green; margin: 10px 0; padding: 10px; border: 1px solid green;">
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="stats">
+        <div class="stat-item">
+            <h3>Total Productos</h3>
+            <p style="font-size: 24px; font-weight: bold;">{{ total_productos }}</p>
+        </div>
+        <div class="stat-item">
+            <h3>Total Stock</h3>
+            <p style="font-size: 24px; font-weight: bold;">{{ total_stock }} unidades</p>
+        </div>
+        <div class="stat-item">
+            <h3>Valor Inventario</h3>
+            <p style="font-size: 24px; font-weight: bold;">${{ valor_inventario|floatformat:2 }}</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Productos con Stock Bajo (< 10 unidades)</h2>
+        {% if productos_stock_bajo %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Stock Actual</th>
+                        <th>Precio</th>
+                        <th>Valor en Stock</th>
+                        <th>Categoría ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos_stock_bajo %}
+                    <tr class="low-stock">
+                        <td>{{ producto.id }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.stock }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td>${{ producto.stock|floatformat:2 }}</td>
+                        <td>{{ producto.categoria_id }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay productos con stock bajo.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Filtros Avanzados</h2>
+        <form method="get" action="#">
+            <div style="margin: 10px 0;">
+                <label>Productos con stock menor a:</label>
+                <input type="number" name="stock_min" value="10" style="width: 100px; padding: 5px;">
+                <button type="submit" style="padding: 5px 15px; background: #007bff; color: white; border: none;">
+                    Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

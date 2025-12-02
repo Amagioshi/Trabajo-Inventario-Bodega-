@@ -4,11 +4,12 @@ from django.contrib.auth.hashers import make_password
 
 class Usuario(AbstractUser):
     TIPO_USUARIO = [
-        ('admin', 'Administrador'),
-        ('usuario', 'Usuario Normal'),
+        ('administrador', 'Administrador'),
+        ('bodeguero', 'Bodeguero'),
+        ('invitado', 'Invitado'),
     ]
     
-    tipo_usuario = models.CharField(max_length=10, choices=TIPO_USUARIO, default='usuario')
+    tipo_usuario = models.CharField(max_length=15, choices=TIPO_USUARIO, default='invitado')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)
 
@@ -18,9 +19,13 @@ class Usuario(AbstractUser):
         super().save(*args, **kwargs)
 
     def es_administrador(self):
-        return self.tipo_usuario == 'admin'
+        return self.tipo_usuario == 'administrador'
+    
+    def es_bodeguero(self):
+        return self.tipo_usuario == 'bodeguero'
+    
+    def es_invitado(self):
+        return self.tipo_usuario == 'invitado'
 
     def __str__(self):
         return f"{self.username} ({self.get_tipo_usuario_display()})"
-
-    

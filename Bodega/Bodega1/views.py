@@ -1,8 +1,9 @@
+import os
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-
+from django.conf import settings
 # Importaciones ódigo legacy
 from Bodega1.legacy.conexion import ConexionBD
 from Bodega1.legacy.servicios.categoria_servicio import CategoriaServicio
@@ -12,6 +13,7 @@ from Bodega1.legacy.servicios.producto_servicio import ProductoServicio
 from Bodega1.legacy.repositorios.producto_repositorio import ProductoRepositorio
 from Bodega1.legacy.repositorios.categoria_repositorio import CategoriaRepositorio
 from Bodega1.legacy.repositorios.movimiento_repositorio import MovimientoRepositorio
+from Bodega1.models import Usuario
 # Vista del dashboard 
 @login_required
 def dashboard(request):
@@ -25,13 +27,42 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, f'Bienvenido {username}!')
-            return redirect('dashboard')
-        else:
+        
+        # Buscar en usuarios.txt
+        usuarios_path = os.path.join(settings.BASE_DIR, 'usuarios.txt')
+        
+        try:
+            with open(usuarios_path, 'r') as f:
+                for linea in f:
+                    linea = linea.strip()
+                    if linea and ',' in linea:
+                        user_file, pass_file, rol = linea.split(',', 2)
+                        
+                        if username == user_file and password == pass_file:
+                            # Usuario encontrado
+                            user, created = Usuario.objects.get_or_create(
+                                username=username,
+                                defaults={'tipo_usuario': rol, 'is_active': True}
+                            )
+                            
+                            if not created:
+                                user.tipo_usuario = rol
+                                user.save()
+                            
+                            user.backend = 'django.contrib.auth.backends.ModelBackend'
+                            login(request, user)
+                            request.session['rol_usuario'] = rol
+                            
+                            messages.success(request, f'Bienvenido {username}')
+                            return redirect('dashboard')
+            
+            # Si llegó aquí, no encontró el usuario
             messages.error(request, 'Usuario o contraseña incorrectos')
+            
+        except FileNotFoundError:
+            messages.error(request, 'Archivo usuarios.txt no encontrado')
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
     
     return render(request, 'login.html')
 
@@ -182,6 +213,40 @@ def historial_movimientos(request):
         return render(request, 'historial_movimientos.html', {
             'movimientos': [],
             'productos': []
+        })
+    finally:
+        db.cerrar_conexion()
+
+
+@login_required
+def informes(request):
+    db = ConexionBD()
+    try:
+        db.conectar()
+        repo_productos = ProductoRepositorio(db)
+        
+        productos = repo_productos.obtener_todos()
+        total_productos = len(productos)
+        total_stock = sum(p.stock for p in productos)
+        valor_inventario = sum(p.stock * p.precio for p in productos)
+        
+        # Productos con stock bajo (menos de 10 unidades)
+        productos_stock_bajo = [p for p in productos if p.stock < 10]
+        
+        return render(request, 'informes.html', {
+            'total_productos': total_productos,
+            'total_stock': total_stock,
+            'valor_inventario': valor_inventario,
+            'productos_stock_bajo': productos_stock_bajo,
+        })
+        
+    except Exception as e:
+        messages.error(request, f'Error en informes: {e}')
+        return render(request, 'informes.html', {
+            'total_productos': 0,
+            'total_stock': 0,
+            'valor_inventario': 0,
+            'productos_stock_bajo': [],
         })
     finally:
         db.cerrar_conexion()
