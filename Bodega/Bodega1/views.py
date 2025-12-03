@@ -4,7 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.conf import settings
-# Importaciones ódigo legacy
+from .decorators import admin_required, bodeguero_required, puede_ver_productos, puede_egresar, puede_crear_categorias, puede_crear_productos
+
+# Importaciones código legacy
 from Bodega1.legacy.conexion import ConexionBD
 from Bodega1.legacy.servicios.categoria_servicio import CategoriaServicio
 from Bodega1.legacy.repositorios.categoria_repositorio import CategoriaRepositorio
@@ -14,6 +16,7 @@ from Bodega1.legacy.repositorios.producto_repositorio import ProductoRepositorio
 from Bodega1.legacy.repositorios.categoria_repositorio import CategoriaRepositorio
 from Bodega1.legacy.repositorios.movimiento_repositorio import MovimientoRepositorio
 from Bodega1.models import Usuario
+
 # Vista del dashboard 
 @login_required
 def dashboard(request):
@@ -73,7 +76,7 @@ def logout_view(request):
     return redirect('login')
 
 # Vista de gestión de categorías
-@login_required
+@puede_crear_categorias
 def gestion_categorias(request):
     db = ConexionBD()
     try:
@@ -101,11 +104,30 @@ def gestion_categorias(request):
         })
     finally:
         db.cerrar_conexion()
+@puede_ver_productos
+def ver_productos(request):
+    """Vista para VER productos (todos los roles)"""
+    db = ConexionBD()
+    try:
+        db.conectar()
+        repo_productos = ProductoRepositorio(db)
+        
+        productos = repo_productos.obtener_todos()
+        return render(request, 'ver_productos.html', {
+            'productos': productos
+        })
+        
+    except Exception as e:
+        messages.error(request, f'Error de conexión: {e}')
+        return render(request, 'ver_productos.html', {
+            'productos': []
+        })
+    finally:
+        db.cerrar_conexion()
 
 
 
-
-@login_required
+@puede_crear_productos
 def gestion_productos(request):
     db = ConexionBD()
     try:
@@ -143,9 +165,7 @@ def gestion_productos(request):
     finally:
         db.cerrar_conexion()
 
-
-
-@login_required
+@bodeguero_required
 def gestion_movimientos(request):
     db = ConexionBD()
     try:
@@ -186,7 +206,7 @@ def gestion_movimientos(request):
     finally:
         db.cerrar_conexion()
 
-@login_required
+@puede_ver_productos
 def historial_movimientos(request):
     db = ConexionBD()
     try:
@@ -217,8 +237,7 @@ def historial_movimientos(request):
     finally:
         db.cerrar_conexion()
 
-
-@login_required
+@admin_required
 def informes(request):
     db = ConexionBD()
     try:

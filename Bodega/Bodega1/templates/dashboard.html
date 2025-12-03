@@ -3,33 +3,81 @@
 <head>
     <title>Dashboard - Sistema Inventario</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 50px auto; padding: 20px; }
         .header { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
         .menu { display: flex; gap: 10px; margin: 20px 0; }
-        .menu a { padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; }
+        .menu a { padding: 10px 15px; color: white; text-decoration: none; border-radius: 3px; }
+        .admin-badge { background: #dc3545; }
+        .bodeguero-badge { background: #0d6efd; }
+        .invitado-badge { background: #6c757d; }
+        .role-badge { 
+            display: inline-block; 
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 0.8em; 
+            margin-left: 10px; 
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Sistema de Inventario de Bodega</h1>
-        <p>Bienvenido <strong>{{ user.username }}</strong> ({{ user.tipo_usuario }})</p>
+        <p>Bienvenido <strong>{{ user.username }}</strong> 
+            <span class="role-badge 
+                {% if user.tipo_usuario == 'administrador' %}admin-badge
+                {% elif user.tipo_usuario == 'bodeguero' %}bodeguero-badge
+                {% else %}invitado-badge{% endif %}">
+                {{ user.get_tipo_usuario_display }}
+            </span>
+        </p>
         <a href="/logout/">Cerrar Sesión</a>
     </div>
 
-    <div class="menu">
-    <a href="/categorias/">Gestión de Categorías</a>
-    <a href="/productos/">Gestión de Productos</a>
-    <a href="/movimientos/">Movimientos</a>  
-    <a href="/movimientos/historial/">Historial</a>  
-    <a href="/informes/">Informes</a>
-</div>
+    <!-- MENU PARA ADMINISTRADORES -->
+    {% if user.tipo_usuario == 'administrador' %}
+    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+        <h3>Panel de Administración</h3>
+        <div class="menu">
+            <a href="/categorias/" style="background: #28a745;">Gestión de Categorías</a>
+            <a href="/productos/" style="background: #28a745;">Gestión de Productos</a>
+            <a href="/movimientos/" style="background: #007bff;">Movimientos</a>
+            <a href="/movimientos/historial/" style="background: #17a2b8;">Historial</a>
+            <a href="/informes/" style="background: #6f42c1;">Informes</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- MENU PARA BODEGUEROS -->
+    {% if user.tipo_usuario == 'bodeguero' %}
+    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+        <h3>Panel de Bodeguero</h3>
+        <div class="menu">
+            <a href="/productos/" style="background: #007bff;">Ver Productos</a>
+            <a href="/movimientos/" style="background: #28a745;">Ingresar Productos</a>
+            <a href="/movimientos/" style="background: #ffc107;">Egresar Productos</a>
+            <a href="/movimientos/historial/" style="background: #17a2b8;">Ver Historial</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- MENU PARA INVITADOS -->
+    {% if user.tipo_usuario == 'invitado' %}
+    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+        <h3>Panel de Invitado</h3>
+        <div class="menu">
+            <a href="/productos/" style="background: #007bff;">Ver Productos</a>
+            <a href="/movimientos/historial/" style="background: #17a2b8;">Ver Historial</a>
+        </div>
+        <p style="color: #6c757d; margin-top: 10px;">Nota: Solo puedes visualizar información, no modificar.</p>
+    </div>
+    {% endif %}
 
     <div>
-        <h2>Proximos pasos:</h2>
+        <h2>Estado del sistema:</h2>
         <ul>
-            <li>Integrar tu codigo de inventario existente</li>
-            <li>Conectar con SQL Server</li>
-            <li>Agregar Bootstrap para mejor diseño</li>
+            <li>Usuario: {{ user.username }}</li>
+            <li>Rol: {{ user.get_tipo_usuario_display }}</li>
+            <li>Sesión activa</li>
         </ul>
     </div>
 </body>
